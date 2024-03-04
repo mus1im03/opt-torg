@@ -40,14 +40,29 @@ export default function CategoriesScreen({ navigation }) {
     }
   };
 
+  const clearCartItems = () => {
+    setCartItems([]);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  const addToCart = (items) => {
-    console.log("Adding to cart in CategoriesScreen:", items);
-    setCartItems((prevCartItems) => [...prevCartItems, ...items]);
+  const addToCart = (items, isRemoving = false) => {
+    console.log(`${isRemoving ? "Removing from" : "Adding to"} cart in CategoriesScreen:`, items);
+  
+    if (isRemoving) {
+      setCartItems((prevCartItems) =>
+        prevCartItems.filter((item) => !items.find((cartItem) => cartItem._id === item._id))
+      );
+    } else {
+      setCartItems((prevCartItems) => [...prevCartItems, ...items]);
+    }
   };
+
+  const updateCategories = (updatedCartItems) => {
+    setCartItems(updatedCartItems);
+  }
 
   if (isLoading) {
     return <Loading />;
@@ -68,7 +83,7 @@ export default function CategoriesScreen({ navigation }) {
         )}
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate("CartItems", { cartItems, fromCategories: true })}
+        onPress={() => navigation.navigate("CartItems", { cartItems, fromCategories: true, clearCartItems, updateCategories })}
       >
         <CartIcon source={cart} />
       </TouchableOpacity>

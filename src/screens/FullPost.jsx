@@ -52,7 +52,6 @@ const FullPostScreen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [productStates, setProductStates] = useState([]);
-  // const [quantity, setQuantity] = useState(0);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -83,13 +82,21 @@ const FullPostScreen = ({ route, navigation }) => {
   );
 
   const increaseQuantity = (index) => {
+    const currentProduct = filteredProducts[index];
+  
+    if (currentProduct.left === 0) {
+      // Product is out of stock
+      Alert.alert("Внимание", "Товара нет в остатке!!!");
+      return;
+    }
+  
     setProductStates((prevStates) => {
       const updatedStates = [...prevStates];
       updatedStates[index] = { quantity: updatedStates[index].quantity + 1 };
       return updatedStates;
     });
   };
-
+  
   const decreaseQuantity = (index) => {
     if (productStates[index].quantity > 0) {
       setProductStates((prevStates) => {
@@ -100,6 +107,23 @@ const FullPostScreen = ({ route, navigation }) => {
     }
   };
 
+  // Добавление товаров с открытием корзины 
+  // const addToCartWithFilter = () => {
+  //   const itemsToAdd = filteredProducts
+  //     .map((product, index) => ({
+  //       ...product,
+  //       quantity: productStates[index].quantity,
+  //     }))
+  //     .filter((product) => product.quantity > 0);
+  
+  //   addToCart(itemsToAdd);
+  //   navigation.navigate("CartItems", {
+  //     cartItems: itemsToAdd,
+  //     fromCategories: false,
+  //   });
+  // };
+
+  // Добавление товаров не открывая корзину
   const addToCartWithFilter = () => {
     const itemsToAdd = filteredProducts
       .map((product, index) => ({
@@ -108,21 +132,9 @@ const FullPostScreen = ({ route, navigation }) => {
       }))
       .filter((product) => product.quantity > 0);
   
-    // Проверка остатка товара перед добавлением в корзину
-    const hasOutOfStockProduct = itemsToAdd.some((product) => product.left === 0);
-  
-    if (hasOutOfStockProduct) {
-      Alert.alert("Внимание", "Товара нету в остатке!!!");
-      return;
-    }
-  
     addToCart(itemsToAdd);
-    navigation.navigate("CartItems", {
-      cartItems: itemsToAdd,
-      fromCategories: false,
-    });
-  };   
-
+  };
+  
   return (
     <View style={{ padding: 10, flex: 1 }}>
       <FlatList
@@ -151,15 +163,15 @@ const FullPostScreen = ({ route, navigation }) => {
                   zIndex: 1,
                 }}
               >
-                <PlusButton onPress={() => increaseQuantity(index)}>
-                  <Image source={plus} style={{ width: 30, height: 30 }} />
-                </PlusButton>
-                <Text style={{ fontSize: 18, fontWeight: 500, margin: 5 }}>
-                  {productStates[index].quantity}
-                </Text>
                 <MinusButton onPress={() => decreaseQuantity(index)}>
                   <Image source={minus} style={{ width: 30, height: 30 }} />
                 </MinusButton>
+                <Text style={{ fontSize: 18, fontWeight: 500, margin: 5 }}>
+                  {productStates[index].quantity}
+                </Text>
+                <PlusButton onPress={() => increaseQuantity(index)}>
+                  <Image source={plus} style={{ width: 30, height: 30 }} />
+                </PlusButton>
               </View>
             </View>
           </ProdView>

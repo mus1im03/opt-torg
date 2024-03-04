@@ -1,6 +1,16 @@
-import React, { useState } from "react";
-import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+} from "react-native";
 import styled from "styled-components";
+import plus from "../../../assets/free-icon-add-button-5495006.png";
+import minus from "../../../assets/free-icon-minus-9351477.png";
+import remove from "../../../assets/free-icon-delete-3625005.png";
 
 const ItemsText = styled.Text`
   color: white;
@@ -24,6 +34,33 @@ const OrderView = styled.View`
   margin-bottom: 30px;
 `;
 
+const Minus = styled.Image`
+  width: 20px;
+  height: 20px;
+`;
+
+const Plus = styled.Image`
+  width: 20px;
+  height: 20px;
+`;
+
+const Remove = styled.Image`
+  width: 25px;
+  height: 25px;
+  margin-left: 30px;
+`;
+
+const Summa = styled.Text`
+  color: #000;
+  font-size: 18px;
+  font-weight: 700;
+`;
+
+const SummaView = styled.View`
+  align-items: center;
+  margin: 20px 0;
+`;
+
 const calculateTotalCash = (cartItems) => {
   return cartItems.reduce((total, item) => {
     return total + item.quantity * parseFloat(item.price);
@@ -31,8 +68,22 @@ const calculateTotalCash = (cartItems) => {
 };
 
 const CartItems = ({ route }) => {
-  const [cartItems, setCartItems] = useState(route.params.cartItems.map((item) => ({ ...item, quantity: item.quantity })));
+  const [cartItems, setCartItems] = useState([]);
   const fromCategories = route.params.fromCategories || false;
+  const clearCartItems = route.params.clearCartItems;
+
+  useEffect(() => {
+    setCartItems(
+      route.params.cartItems.map((item) => ({
+        ...item,
+        quantity: item.quantity,
+      }))
+    );
+
+    return () => {
+      setCartItems([]);
+    };
+  }, [route.params.cartItems]);
 
   const handleIncrement = (index) => {
     const updatedCartItems = [...cartItems];
@@ -45,6 +96,19 @@ const CartItems = ({ route }) => {
     if (updatedCartItems[index].quantity > 1) {
       updatedCartItems[index].quantity -= 1;
       setCartItems(updatedCartItems);
+    }
+  };
+
+  const handleRemoveItem = (index) => {
+    const removedItem = cartItems[index];
+    const updatedCartItems = [...cartItems];
+    updatedCartItems.splice(index, 1);
+    setCartItems(updatedCartItems);
+
+    // Передача обновленных данных в CategoriesScreen
+    const updateCategories = route.params.updateCategories;
+    if (updateCategories) {
+      updateCategories(updatedCartItems);
     }
   };
 
@@ -71,7 +135,8 @@ const CartItems = ({ route }) => {
       });
 
       if (response.ok) {
-        setCartItems([]);  // Reset cart after successful submission
+        setCartItems([]);
+        clearCartItems();
         Alert.alert("Успешно", "Заявка отправлена");
       } else {
         Alert.alert("Error", "Failed to send cart items to the database");
@@ -98,7 +163,7 @@ const CartItems = ({ route }) => {
         </View>
         <View
           style={{
-            width: 150,
+            width: 130,
             borderRightColor: "black",
             borderRightWidth: 1,
             marginLeft: 10,
@@ -108,7 +173,7 @@ const CartItems = ({ route }) => {
         </View>
         <View
           style={{
-            width: 100,
+            width: 70,
             borderRightColor: "black",
             borderRightWidth: 1,
             marginLeft: 10,
@@ -116,7 +181,7 @@ const CartItems = ({ route }) => {
         >
           <ItemsText>Кол-во</ItemsText>
         </View>
-        <View style={{ width: 50, marginLeft: 10 }}>
+        <View style={{ width: 100, marginLeft: 10 }}>
           <ItemsText>Цена</ItemsText>
         </View>
       </View>
@@ -130,13 +195,15 @@ const CartItems = ({ route }) => {
                 width: 30,
                 borderRightColor: "black",
                 borderRightWidth: 1,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
               <Text>{index + 1}</Text>
             </View>
             <View
               style={{
-                width: 150,
+                width: 130,
                 borderRightColor: "black",
                 borderRightWidth: 1,
                 marginLeft: 10,
@@ -147,34 +214,41 @@ const CartItems = ({ route }) => {
             </View>
             <View
               style={{
-                width: 100,
+                width: 80,
                 borderRightColor: "black",
                 borderRightWidth: 1,
-                marginLeft: 10,
                 flexDirection: "row",
                 alignItems: "center",
+                justifyContent: "space-evenly",
               }}
             >
               <TouchableOpacity onPress={() => handleDecrement(index)}>
-                <Text style={{ color: "red" }}>-</Text>
+                <Minus source={minus} />
               </TouchableOpacity>
-              <Text>{item.quantity}</Text>
+              <Text style={{ fontSize: 18 }}>{item.quantity}</Text>
               <TouchableOpacity onPress={() => handleIncrement(index)}>
-                <Text style={{ color: "green" }}>+</Text>
+                <Plus source={plus} />
               </TouchableOpacity>
             </View>
             <View
               style={{
+                flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "center",
-                width: 50,
+                justifyContent: "space-evenly",
+                width: 100,
               }}
             >
-              <Text>{item.price}</Text>
+              <Text style={{ marginLeft: 20 }}>{item.price}</Text>
+              <TouchableOpacity onPress={() => handleRemoveItem(index)}>
+                <Remove source={remove} />
+              </TouchableOpacity>
             </View>
           </ItemsView>
         )}
       />
+      <SummaView>
+        <Summa>Cумма: {calculateTotalCash(cartItems)}</Summa>
+      </SummaView>
       {fromCategories && (
         <OrderView>
           <TouchableOpacity onPress={sendCartToDatabase}>
