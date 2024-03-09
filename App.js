@@ -41,14 +41,13 @@ export default function App() {
   };
   return (
     <>
-    dada
-    {/* {isLoggedIn ? (
+    {isLoggedIn ? (
       // Если пользователь вошел, отображаем Navigation
       <Navigation onSignOut={handleSignOut} />
     ) : (
       // Если пользователь не вошел, отображаем SignIn
       <SignIn onSignIn={handleSignIn} />
-    )} */}
+    )}
   </>
   );
 }

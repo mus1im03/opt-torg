@@ -1,11 +1,11 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native";
 import FullPostScreen from "./FullPost";
 import CategoriesScreen from "./Categories";
 import CartItems from "./Cart/CartItems";
 import SignUp from "../auth/SignUp";
 import styled from "styled-components";
+import { TouchableOpacity } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
@@ -24,13 +24,12 @@ const LogoutText = styled.Text`
 `;
 
 export const Navigation = () => {
-
-  const handleSignOut = async () => {
-    // Удаление токена из AsyncStorage при выходе пользователя
-    await AsyncStorage.removeItem("token");
-    // Вызываем функцию родителя для обновления статуса входа
-    onSignOut();
-  };
+  // const handleSignOut = async () => {
+  //   // Удаление токена из AsyncStorage при выходе пользователя
+  //   await AsyncStorage.removeItem("token");
+  //   // Вызываем функцию родителя для обновления статуса входа
+  //   onSignOut();
+  // };
 
   return (
     <NavigationContainer>
@@ -40,11 +39,11 @@ export const Navigation = () => {
           component={CategoriesScreen}
           options={{
             title: "Категории",
-            headerRight: () => (
-              <LogoutButton onPress={handleSignOut}>
-                <LogoutText>Выйти</LogoutText>
-              </LogoutButton>
-            ),
+            // headerRight: () => (
+            //   <LogoutButton onPress={handleSignOut}>
+            //     <LogoutText>Выйти</LogoutText>
+            //   </LogoutButton>
+            // ),
           }}
         />
         <Stack.Screen
