@@ -64,7 +64,7 @@ const SummaView = styled.View`
 const calculateTotalCash = (cartItems) => {
   return cartItems.reduce((total, item) => {
     return total + item.quantity * parseFloat(item.price);
-  }, 0);
+  }, 0).toFixed(2); // Округление до двух знаков после запятой
 };
 
 const CartItems = ({ route }) => {
@@ -87,10 +87,13 @@ const CartItems = ({ route }) => {
   }, [route.params.cartItems]);
 
   const handleIncrement = (index) => {
-    const updatedCartItems = [...cartItems];
-    updatedCartItems[index].quantity += 1;
-    setCartItems(updatedCartItems);
+    setCartItems((prevCartItems) => {
+      const updatedCartItems = [...prevCartItems];
+      updatedCartItems[index].quantity += 1;
+      return updatedCartItems;
+    });
   };
+  
 
   const handleDecrement = (index) => {
     const updatedCartItems = [...cartItems];
