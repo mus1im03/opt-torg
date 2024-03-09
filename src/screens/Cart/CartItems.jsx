@@ -71,6 +71,7 @@ const CartItems = ({ route }) => {
   const [cartItems, setCartItems] = useState([]);
   const fromCategories = route.params.fromCategories || false;
   const clearCartItems = route.params.clearCartItems;
+  const userName = route.params.userName;
 
   useEffect(() => {
     setCartItems(
@@ -131,7 +132,7 @@ const CartItems = ({ route }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ totalCash, products: formattedCartItems }),
+        body: JSON.stringify({ totalCash, products: formattedCartItems, user: userName }),
       });
 
       if (response.ok) {

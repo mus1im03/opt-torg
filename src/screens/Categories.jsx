@@ -11,6 +11,7 @@ import styled from "styled-components/native";
 import Post from "../components/Post";
 import { Loading } from "../components/Loading";
 import cart from "../../assets/cart.png";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CartIcon = styled.Image`
   width: 70px;
@@ -21,10 +22,30 @@ const CartIcon = styled.Image`
   right: 20px;
 `;
 
+const allKeys = await AsyncStorage.getAllKeys();
+const allData = await AsyncStorage.multiGet(allKeys);
+console.log("All AsyncStorage data:", allData);
+
 export default function CategoriesScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
   const [posts, setPosts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
+  const [userName, setUserName] = useState('');
+
+  const getUserInfo = async () => {
+    try {
+      const user = await AsyncStorage.getItem("user");
+      console.log("User data from AsyncStorage:", user);
+  
+      if (user) {
+        const userData = JSON.parse(user);
+        console.log("Parsed user data:", userData);
+        setUserName(userData.title);
+      }
+    } catch (error) {
+      console.error("Ошибка при получении информации о пользователе:", error);
+    }
+  };
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -46,6 +67,7 @@ export default function CategoriesScreen({ navigation }) {
 
   useEffect(() => {
     fetchData();
+    getUserInfo();
   }, []);
 
   const addToCart = (items, isRemoving = false) => {
@@ -83,7 +105,7 @@ export default function CategoriesScreen({ navigation }) {
         )}
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate("CartItems", { cartItems, fromCategories: true, clearCartItems, updateCategories })}
+        onPress={() => navigation.navigate("CartItems", { cartItems, fromCategories: true, clearCartItems, updateCategories, userName: userData.title })}
       >
         <CartIcon source={cart} />
       </TouchableOpacity>
