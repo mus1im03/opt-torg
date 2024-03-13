@@ -16,15 +16,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const CartIcon = styled.Image`
   width: 70px;
   height: 70px;
-  border-radius: 50%;
   position: absolute;
   top: 450px;
   right: 20px;
 `;
-
-const allKeys = await AsyncStorage.getAllKeys();
-const allData = await AsyncStorage.multiGet(allKeys);
-console.log("All AsyncStorage data:", allData);
 
 export default function CategoriesScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -105,7 +100,7 @@ export default function CategoriesScreen({ navigation }) {
         )}
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate("CartItems", { cartItems, fromCategories: true, clearCartItems, updateCategories, userName: userData.title })}
+        onPress={() => navigation.navigate("CartItems", { cartItems, fromCategories: true, clearCartItems, updateCategories, userName })}
       >
         <CartIcon source={cart} />
       </TouchableOpacity>

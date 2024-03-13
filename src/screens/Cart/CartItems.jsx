@@ -5,12 +5,12 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Image,
 } from "react-native";
 import styled from "styled-components";
 import plus from "../../../assets/free-icon-add-button-5495006.png";
 import minus from "../../../assets/free-icon-minus-9351477.png";
 import remove from "../../../assets/free-icon-delete-3625005.png";
+import { format } from 'date-fns';
 
 const ItemsText = styled.Text`
   color: white;
@@ -106,7 +106,6 @@ const CartItems = ({ route }) => {
     updatedCartItems.splice(index, 1);
     setCartItems(updatedCartItems);
 
-    // Передача обновленных данных в CategoriesScreen
     const updateCategories = route.params.updateCategories;
     if (updateCategories) {
       updateCategories(updatedCartItems);
@@ -119,32 +118,46 @@ const CartItems = ({ route }) => {
         Alert.alert("Error", "Cart is empty");
         return;
       }
-
+  
       const formattedCartItems = cartItems.map(({ name, quantity, price }) => ({
         productName: name,
         amount: (quantity || 1).toString(),
+        price: price,
       }));
-
+  
       const totalCash = calculateTotalCash(cartItems);
 
+      const formattedDate = format(new Date(), "yyyy-MM-dd HH:mm:ss");
+  
       const response = await fetch(`http://192.168.0.101:4040/cart/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ totalCash, products: formattedCartItems, user: userName }),
+        body: JSON.stringify({
+          totalCash,
+          date: formattedDate,
+          products: formattedCartItems,
+          user: userName,
+        }),
       });
-
+  
       if (response.ok) {
         setCartItems([]);
         clearCartItems();
         Alert.alert("Успешно", "Заявка отправлена");
       } else {
-        Alert.alert("Error", "Failed to send cart items to the database");
+        Alert.alert(
+          "Error",
+          "Failed to send cart items to the database"
+        );
       }
     } catch (error) {
       console.error("Error sending cart items:", error);
-      Alert.alert("Error", "Failed to send cart items to the database");
+      Alert.alert(
+        "Error",
+        "Failed to send cart items to the database"
+      );
     }
   };
 
@@ -190,7 +203,7 @@ const CartItems = ({ route }) => {
         data={cartItems}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => (
-          <ItemsView key={index} style={{ flexDirection: "row" }}>
+          <ItemsView key={index}>
             <View
               style={{
                 width: 30,

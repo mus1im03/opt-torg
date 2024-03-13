@@ -35,10 +35,10 @@ const InputInfo = styled.TextInput`
 
 const CustomButton = styled(TouchableOpacity)`
   margin: 20px 0;
-  padding: 10px;
+  padding: 15px;
   align-items: center;
-  width: 150px;
-  border-radius: 4px;
+  width: 200px;
+  border-radius: 15px;
   background-color: #4b6cb7;
 `;
 
@@ -47,7 +47,7 @@ const ButtonText = styled.Text`
   font-size: 16px;
 `;
 
-const SignUp = () => {
+const SignUp = ({ onSignInClick }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [title, setTitle] = useState("");
@@ -69,7 +69,6 @@ const SignUp = () => {
         // Сохраняем токен в AsyncStorage
         await AsyncStorage.setItem("token", token);
 
-        // Обработайте токен по вашему усмотрению, например, переход на другой экран
         console.log("Успешная регистрация:", token);
       } else {
         console.error("Ошибка при регистрации:", response.status);
@@ -82,7 +81,6 @@ const SignUp = () => {
   return (
     <AuthView>
       <ContainerView>
-        <Text style={{ color: "black", fontSize: 32, marginBottom: 50 }}>Авторизация</Text>
         <InputInfo
           placeholder="Email"
           value={email}
@@ -107,7 +105,9 @@ const SignUp = () => {
         <CustomButton onPress={handleSignUp}>
           <ButtonText>Зарегистрироваться</ButtonText>
         </CustomButton>
-        <Text>Уже есть аккаунт? Войдите</Text>
+        <TouchableOpacity onPress={() => onSignInClick()}>
+          <Text>Уже есть аккаунт? Войдите</Text>
+        </TouchableOpacity>
       </ContainerView>
     </AuthView>
   );

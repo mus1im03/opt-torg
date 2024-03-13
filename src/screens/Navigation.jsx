@@ -1,35 +1,27 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import FullPostScreen from "./FullPost";
 import CategoriesScreen from "./Categories";
 import CartItems from "./Cart/CartItems";
-import SignUp from "../auth/SignUp";
-import styled from "styled-components";
-import { TouchableOpacity } from "react-native";
+import { Image, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import sidebar from "../../assets/free-icon-menu-bar-10233705.png";
+import { useState } from "react";
+import SideBar from "../components/SideBar";
+import CartHistory from "./Cart/CartHistory";
 
 const Stack = createNativeStackNavigator();
 
-const LogoutButton = styled.TouchableOpacity`
-  margin: 20px 0;
-  padding: 10px;
-  align-items: center;
-  width: 150px;
-  border-radius: 4px;
-  background-color: #ff6347;
-`;
+const MenuIcon = () => (
+  <Image source={sidebar} style={{ width: 30, height: 30 }} />
+);
 
-const LogoutText = styled.Text`
-  color: white;
-  font-size: 16px;
-`;
-
-export const Navigation = () => {
-  // const handleSignOut = async () => {
-  //   // Удаление токена из AsyncStorage при выходе пользователя
-  //   await AsyncStorage.removeItem("token");
-  //   // Вызываем функцию родителя для обновления статуса входа
-  //   onSignOut();
-  // };
+export const Navigation = ({ onSignOut }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const handleSignOut = async () => {
+    await AsyncStorage.removeItem("token");
+    onSignOut();
+  };
 
   return (
     <NavigationContainer>
@@ -39,11 +31,13 @@ export const Navigation = () => {
           component={CategoriesScreen}
           options={{
             title: "Категории",
-            // headerRight: () => (
-            //   <LogoutButton onPress={handleSignOut}>
-            //     <LogoutText>Выйти</LogoutText>
-            //   </LogoutButton>
-            // ),
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => setIsSidebarOpen(!isSidebarOpen)}
+              >
+                <MenuIcon />
+              </TouchableOpacity>
+            ),
           }}
         />
         <Stack.Screen
@@ -56,12 +50,9 @@ export const Navigation = () => {
           component={CartItems}
           options={{ title: "Корзина" }}
         />
-        <Stack.Screen
-          name="SignUp"
-          component={SignUp}
-          options={{ title: "Авторизация" }}
-        />
       </Stack.Navigator>
+      {isSidebarOpen && <SideBar onSignOut={handleSignOut} onClose={() => setIsSidebarOpen(false)} />}
+
     </NavigationContainer>
   );
 };

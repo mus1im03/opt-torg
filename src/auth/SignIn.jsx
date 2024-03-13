@@ -1,4 +1,4 @@
-// SignIn.js
+// Ваш компонент SignIn
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -36,10 +36,10 @@ const InputInfo = styled.TextInput`
 
 const CustomButton = styled(TouchableOpacity)`
   margin: 20px 0;
-  padding: 10px;
+  padding: 15px;
   align-items: center;
   width: 150px;
-  border-radius: 4px;
+  border-radius: 15px;
   background-color: #4b6cb7;
 `;
 
@@ -48,7 +48,7 @@ const ButtonText = styled.Text`
   font-size: 16px;
 `;
 
-const SignIn = ({ onSignIn }) => {
+const SignIn = ({ onSignIn, onSignUpClick }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -63,28 +63,33 @@ const SignIn = ({ onSignIn }) => {
       });
 
       if (response.ok) {
-        const token = await response.json();
-        // Сохраняем токен в AsyncStorage
-        await AsyncStorage.setItem("token", token);
-        await AsyncStorage.setItem("user", JSON.stringify(userData));
+        const { token, userData } = await response.json();
 
-        // Вызываем функцию onSignIn, переданную через пропсы
-        onSignIn();
+        if (token !== undefined && token !== null) {
+          await AsyncStorage.setItem("token", token);
+        } else {
+          console.error("Error logging in: Token is undefined or null");
+          return;
+        }
+
+        if (userData) {
+          await AsyncStorage.setItem("user", JSON.stringify(userData));
+        }
+
+        if (onSignIn) {
+          onSignIn();
+        }
       } else {
-        // Обработка ошибки входа
-        console.error("Ошибка при входе:", response.status);
+        console.error("Error logging in:", response.status);
       }
     } catch (error) {
-      console.error("Ошибка при входе:", error);
+      console.error("Error logging in:", error);
     }
   };
 
   return (
     <LoginView>
       <ContainerView>
-        <Text style={{ color: "black", fontSize: 32, marginBottom: 50 }}>
-          Вход
-        </Text>
         <InputInfo
           placeholder="Email"
           value={email}
@@ -99,10 +104,9 @@ const SignIn = ({ onSignIn }) => {
         <CustomButton onPress={handleSignIn}>
           <ButtonText>Войти</ButtonText>
         </CustomButton>
-        <Text>
-          Зарегистрируйтесь
-          {/* Здесь должен быть ваш навигатор для перехода на экран регистрации */}
-        </Text>
+        <TouchableOpacity onPress={onSignUpClick}>
+          <Text>Зарегистрироваться</Text>
+        </TouchableOpacity>
       </ContainerView>
     </LoginView>
   );

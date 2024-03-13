@@ -40,11 +40,11 @@ const MinusButton = styled.TouchableOpacity`
 
 const OrderView = styled.View`
   align-items: center;
-  margin: 10px auto;
-  padding: 10px;
+  margin: 20px auto;
+  padding: 15px;
   background-color: #20c1b6;
   border-radius: 5px;
-  width: 180px;
+  width: 190px;
 `;
 
 const FullPostScreen = ({ route, navigation }) => {
@@ -85,7 +85,6 @@ const FullPostScreen = ({ route, navigation }) => {
     const currentProduct = filteredProducts[index];
   
     if (currentProduct.left === 0) {
-      // Product is out of stock
       Alert.alert("Внимание", "Товара нет в остатке!!!");
       return;
     }
@@ -123,7 +122,6 @@ const FullPostScreen = ({ route, navigation }) => {
   //   });
   // };
 
-  // Добавление товаров не открывая корзину
   const addToCartWithFilter = () => {
     const itemsToAdd = filteredProducts
       .map((product, index) => ({
@@ -133,6 +131,10 @@ const FullPostScreen = ({ route, navigation }) => {
       .filter((product) => product.quantity > 0);
   
     addToCart(itemsToAdd);
+
+    Alert.alert(
+      "Вы добавили товар(ы) в корзину",
+    );
   };
   
   return (
