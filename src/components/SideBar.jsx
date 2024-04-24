@@ -7,7 +7,6 @@ const MenuBar = styled.View`
   flex: 8;
   width: 100%;
   height: 100%;
-  background-color: #cecece;
 `;
 
 const LogoutButton = styled.TouchableOpacity`
@@ -27,28 +26,13 @@ const LogoutText = styled.Text`
   font-size: 16px;
 `;
 
-const CartHistoryText = styled.Text`
-  margin: 30px 20px;
-  font-size: 16px;
-  font-weight: 600;
-`;
-
 const BarContainer = styled.View``;
 
 const SideBar = ({ onSignOut }) => {
-  const [showCartHistory, setShowCartHistory] = useState(false);
-
-  const handleCartHistoryPress = () => {
-    setShowCartHistory(!showCartHistory);
-  };
-
   return (
     <MenuBar>
       <BarContainer>
-        <TouchableOpacity onPress={handleCartHistoryPress}>
-          <CartHistoryText>История заказов</CartHistoryText>
-        </TouchableOpacity>
-        {showCartHistory && <CartHistory />}
+        <CartHistory />
       </BarContainer>
       <LogoutButton onPress={onSignOut}>
         <LogoutText>Выйти из аккаунта</LogoutText>

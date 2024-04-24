@@ -20,7 +20,7 @@ const ItemsView = styled.View`
 
 const Separator = styled.View`
   height: 10px;
-  background-color: #f0f0f0; // Add your desired separator color
+  background-color: #f0f0f0;
 `;
 
 const CartHistory = () => {
@@ -178,7 +178,7 @@ const CartHistory = () => {
                 style={{
                   borderRightWidth: 1,
                   borderColor: "black",
-                  width: 247,
+                  width: 231,
                 }}
               >
                 <Text>Общая сумма: {item.totalCash}</Text>
@@ -186,7 +186,7 @@ const CartHistory = () => {
               </View>
               <Text
                 style={{
-                  marginLeft: 50,
+                  // marginLeft: 30,
                   marginTop: 10,
                   color: item.paid ? "green" : "red",
                 }}
